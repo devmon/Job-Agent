@@ -1,0 +1,112 @@
+# ============================================================
+#  Job Agent configuration
+#  Edit anything marked [EDIT]. Everything else has sensible defaults.
+# ============================================================
+
+# ---- Local model (Apple Intelligence) ----------------------
+# Scores come from Apple's on-device Foundation Model. Nothing to download or
+# pick here; Apple Intelligence just has to be turned on in System Settings.
+apple:
+  temperature: 0.1
+
+# ---- Who you are (the model scores every posting against this) ----
+profile: |
+  
+  Education:
+  
+  Skills:
+
+  Experience/Projects:  
+    
+  Description of desired role:
+
+  Minimum salary:
+
+  Additional requirements: 
+
+# ---- Scoring / output ---------------------------------------
+min_score_for_top: 5          # postings at or above this go on the "Top Matches" sheet
+spreadsheet: "job_matches.xlsx"
+database: "jobs.db"
+max_description_chars: 3500   # posting text sent to the model (Apple's model reads ~4,000 tokens at most)
+
+# ---- Quick pre-filter (skips obvious misses before the model sees them) ----
+exclude_title_keywords:
+  - intern
+  - internship
+  - nurse
+  - sales representative
+  - account executive
+  - driver
+  - lab technician
+  - maintenance technician
+  - paralegal
+  - legal assistant
+  - receptionist
+  - software engineer
+  - data entry
+
+# ---- Sources ------------------------------------------------
+sources:
+
+  # Indeed + LinkedIn via the JobSpy library. Convenient, but it scrapes those
+  # sites against their terms of service: keep volumes modest. It may break
+  # occasionally when the sites change.
+  jobspy:
+    enabled: true
+    sites: ["indeed", "linkedin"]
+    location: "United States"
+    results_per_search: 20
+    hours_old: 72              # only postings from the last 3 days
+    delay_seconds: 60           # pause between searches to avoid rate limits
+    search_terms:
+      # Add desired titles here
+      # - "engineer"
+
+  # Separate search for local area
+  jobspy_local:
+    enabled: true
+    sites: ["indeed", "linkedin"]
+    location: "Buffalo, NY"
+    distance_miles: 35
+    results_per_search: 20
+    hours_old: 72
+    delay_seconds: 60
+    search_terms:
+      # Add desired titles here
+      # - "engineer"
+
+  # Company career boards on Greenhouse / Lever (official public APIs, no scraping).
+  # Find a company's slug from its job board URL:
+  #   boards.greenhouse.io/<slug>   or   jobs.lever.co/<slug>
+  # Only postings whose title contains one of title_keywords are kept.
+  greenhouse:
+    enabled: false
+    companies: []              # e.g. ["somefirm", "anotherco"]
+  lever:
+    enabled: false
+    companies: []
+  company_boards_title_keywords:
+    # Add desired titles here
+    # - "engineer"
+
+  # USAJobs (federal, e.g. USPTO patent examiner). Free API key:
+  # https://developer.usajobs.gov/apirequest/
+  usajobs:
+    enabled: false
+    api_key: ""
+    email: ""                  # the email you registered the key with
+    keywords: ["Add desired phrase to search here", "Multiple search terms separated by commas"]
+    remote_only: true
+
+  # Adzuna aggregator. Free key: https://developer.adzuna.com/
+  adzuna:
+    enabled: false
+    app_id: ""
+    app_key: ""
+    keywords: ["Add desired phrase to search here", "Multiple search terms separated by commas"]
+    max_days_old: 3
+
+# Towns used to flag a posting as local to you (matched against its location).
+local_area_keywords:
+  # - "Buffalo"
